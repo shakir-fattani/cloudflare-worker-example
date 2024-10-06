@@ -1,0 +1,4 @@
+# wrangler.toml
+name = "billing-app"
+main = "index.js"
+compatibility_date = "2024-10-06"
