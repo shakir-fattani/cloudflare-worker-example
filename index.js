@@ -1,4 +1,4 @@
-// import apiRouter from './controller.js';
+import apiRouter from './controller.js';
 
 export default {
   async fetch(request, env, ctx) {
