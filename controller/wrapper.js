@@ -14,7 +14,7 @@ const wrapper = (handlerFunc) => {
       return new Response(JSON.stringify({
         status: 'fail',
         message: `something went wrong.`,
-        url: request.url,
+        url: requestObject.request.url,
         error,
       }), { status: 500, headers: { 'Content-Type': 'application/json' } })
     }
