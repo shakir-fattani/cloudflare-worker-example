@@ -2,23 +2,28 @@ import Router from './router.js'
 import SubscriptionPlanService from './../service/subscription-plan.service.js'
 
 const apiRouter = new Router();
-apiRouter.post("/api/subscription-plan/create", async ({ request, env, ctx }) => {
+apiRouter.post("/api/subscription-plan/create", async ({ request, env }) => {
 	const content = await request.json();
+
 	const plan = await SubscriptionPlanService.createPlan(env, content)
+
 	return {
 		status: 'success',
 		message: `plan created #: ${plan.id}`,
-		plan,
+		plan	
 	}
 });
 
-apiRouter.get("/api/subscription-plan/getAll", ({ env }) => {
-	const list = SubscriptionPlanService.getPlans(env)
-	return list
+apiRouter.get("/api/subscription-plan/getAll", async ({ env }) => {
+	const plans = await SubscriptionPlanService.getPlans(env)
+	return {
+		status: 'success',
+		plans,
+	}
 });
 
-apiRouter.get("/api/subscription-plan/:id/get", ({ env, params }) => {
-	const plan = SubscriptionPlanService.getPlanById(params.id);
+apiRouter.get("/api/subscription-plan/:id/get", async ({ env, params }) => {
+	const plan = await SubscriptionPlanService.getPlanById(env, params.id);
 	if (!plan)
 		throw new Error('plan not found');
 
@@ -29,17 +34,36 @@ apiRouter.get("/api/subscription-plan/:id/get", ({ env, params }) => {
 	}
 });
 
-apiRouter.put("/api/subscription-plan/:id/update", ({ request, env, ctx }) => "plan Index!");
+apiRouter.put("/api/subscription-plan/:id/update", async ({ params, request, env }) => {
+	const plan = await SubscriptionPlanService.updatePlanById(env, params.id, request.json());
+	if (!plan)
+		throw new Error('plan not found');
 
-apiRouter.delete("/api/subscription-plan/:id/delete", ({ request, env, ctx }) => "plan Index!");
+	return {
+		status: 'success',
+		message: `plan #: ${plan.id} found`,
+		plan
+	}
+});
+
+apiRouter.delete("/api/subscription-plan/:id/delete", async ({ params, env }) => {
+	const isDeleted = await SubscriptionPlanService.deletePlanById(env, params.id);
+	if (!isDeleted)
+		throw new Error('plan not found');
+
+	return {
+		status: 'success',
+		message: `plan #: ${plan.id} deleted`
+	}
+});
 
 // 404 for everything else
-// apiRouter.all("*", ({ request }) =>  {
-// 	throw {
-// 		error: "subscription-plan path Not Found.",
-// 		status: 404,
-// 		url: request.url
-// 	}
-// });
+apiRouter.all("*", ({ request }) =>  {
+	throw {
+		error: "subscription-plan path Not Found.",
+		status: 404,
+		url: request.url
+	}
+});
 
 export default apiRouter;

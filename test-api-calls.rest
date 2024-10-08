@@ -1,5 +1,24 @@
-GET https://billing-app.fattanishakir.workers.dev/health HTTP/1.1
+@baseUrl = http://localhost:8787
+# @baseUrl = https://billing-app.fattanishakir.workers.dev
+@planId = 77952532-3177-4f6e-bbdc-7a6730214e57
+
+######
+GET {{baseUrl}}/health HTTP/1.1
 
 #######
 
-GET https://billing-app.fattanishakir.workers.dev/api/subscription-plan/ HTTP/1.1
+GET {{baseUrl}}/api/subscription-plan/getAll HTTP/1.1
+
+######
+POST {{baseUrl}}/api/subscription-plan/create HTTP/1.1 
+Content-Type: application/json
+
+{
+  "name": "Standard Monthly Plan",
+  "billing_cycle": "monthly",
+  "price": 100,
+  "status": "active"
+}
+
+######
+GET {{baseUrl}}/api/subscription-plan/{{planId}}/get HTTP/1.1 

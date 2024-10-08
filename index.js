@@ -22,5 +22,9 @@ export default {
       </ul>`,
 			{ headers: { "Content-Type": "text/html" } }
 		);
-  }
+  },
+
+  async scheduled(event, env, ctx) {
+    console.log(event.scheduledTime)
+  },
 };
