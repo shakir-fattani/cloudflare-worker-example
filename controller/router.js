@@ -1,4 +1,4 @@
-import wrapper from '../wrapper.js'
+import wrapper from './wrapper.js'
 
 export default class Router {
 	routes = [];
