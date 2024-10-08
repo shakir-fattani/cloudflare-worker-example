@@ -1,5 +1,6 @@
 import Router from './router.js'
 import CustomerService from '../service/customer.service.js'
+import { Customer } from '../types.js';
 
 const apiRouter = new Router();
 apiRouter.post("/api/customer/create", async ({ request, env }) => {
@@ -35,7 +36,20 @@ apiRouter.get("/api/customer/:id/get", async ({ env, params }) => {
 });
 
 apiRouter.put("/api/customer/:id/update", async ({ params, request, env }) => {
-	const customer = await CustomerService.updateCustomerById(env, params.id, request.json());
+	const customer = await CustomerService.updateCustomerById(env, params.id, request.json() as unknown as Customer);
+	if (!customer)
+		throw new Error('customer not found');
+
+	return {
+		status: 'success',
+		message: `customer #: ${customer.id} found`,
+		customer
+	}
+});
+
+apiRouter.post("/api/customer/:id/apply-subscription-plan", async ({ params, request, env }) => {
+	const { subscription_plan_id } = request.json() as unknown as { subscription_plan_id: string }
+	const customer = await CustomerService.updateSubscriptionById(env, params.id, subscription_plan_id);
 	if (!customer)
 		throw new Error('customer not found');
 

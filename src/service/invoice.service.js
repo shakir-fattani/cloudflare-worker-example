@@ -9,7 +9,7 @@ export default class InvoiceService {
     }
   }
 
-  static async createCustomer(env, { customer_id, amount, due_date, payment_status = 'pending', payment_date } = {}) {
+  static async createInvoice(env, { customer_id, amount, due_date, payment_status = 'pending', payment_date } = {}) {
     InvoiceService.throwIfWrongPaymentStatus(payment_status)
 
     const customer = await CustomerService.getCustomerById(env, customer_id);
@@ -42,13 +42,19 @@ export default class InvoiceService {
     return results;
   }
 
-  static async getCustomerById(env, id) {
+  static async getInvoiceById(env, id) {
     const stmt = env.DB.prepare("SELECT id, customer_id, amount, due_date, payment_status, payment_date FROM Invoice WHERE id = ?1").bind(id);
     const { results } = await stmt.all();
     return results[0];
   }
 
-  static async updateCustomerById(env, id, { due_date, payment_status, payment_date } = {}) {
+  static async getInvoiceByCustomerId(env, customerId) {
+    const stmt = env.DB.prepare("SELECT id, customer_id, amount, due_date, payment_status, payment_date FROM Invoice WHERE customer_id = ?1").bind(customerId);
+    const { results } = await stmt.all();
+    return results[0];
+  }
+
+  static async updateInvoiceById(env, id, { due_date, payment_status, payment_date } = {}) {
     const bindingArray = [];
     const fieldsNeedToBeUpdated = [];
     let bindingCount = 2
@@ -59,6 +65,7 @@ export default class InvoiceService {
     }
     
     if (payment_status) {
+      InvoiceService.throwIfWrongPaymentStatus(payment_status);
       bindingArray.push(payment_status);
       fieldsNeedToBeUpdated.push(`payment_status = ?${bindingCount++}`)
     }
@@ -74,12 +81,6 @@ export default class InvoiceService {
       return null;
     }
     
-    return CustomerService.getCustomerById(env, id);
-  }
-  
-  static async deleteCustomerById(env, id) {
-    const stmt = env.DB.prepare("DELETE FROM Customer WHERE id = ?1").bind(id);
-    const { meta } = await stmt.run();
-    return meta.changes === 1;
+    return InvoiceService.getInvoiceById(env, id);
   }
 }

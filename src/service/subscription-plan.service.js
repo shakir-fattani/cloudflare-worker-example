@@ -48,6 +48,8 @@ export default class SubscriptionPlanService {
   }
 
   static async updatePlanById(env, id, { name, billing_cycle, price, status } = {}) {
+    // await throwIfCustomersAreSubscribe(env, id);
+
     const bindingArray = [];
     const fieldsNeedToBeUpdated = [];
     let bindingCount = 2
@@ -67,13 +69,12 @@ export default class SubscriptionPlanService {
       bindingArray.push(price);
       fieldsNeedToBeUpdated.push(`price = ?${bindingCount++}`)
     }
-    
+
     if (status) {
       SubscriptionPlanService.throwIfWrongBillingStatus(status)
       bindingArray.push(status);
       fieldsNeedToBeUpdated.push(`status = ?${bindingCount++}`)
     }
-
 
     const stmt = env.DB.prepare(`UPDATE SubscriptionPlan SET ${fieldsNeedToBeUpdated.join(', ')} WHERE id = ?1`).bind(id, ...bindingArray);
     const { meta } = await stmt.run();
@@ -83,8 +84,16 @@ export default class SubscriptionPlanService {
     
     return SubscriptionPlanService.getPlanById(env, id);
   }
+
+  static async throwIfCustomersAreSubscribe(env, id) {
+    const { results } = await (env.DB.prepare('SELECT count(id) as customerSubscriptionCount from Customer where subscription_plan_id = ?1 ').bind(id)).all()
+    if (!results[0] || results[0].customerSubscriptionCount > 0) {
+      throw new Error("can't delete, because customers are subscribe to it");
+    }
+  }
   
   static async deletePlanById(env, id) {
+    await throwIfCustomersAreSubscribe(env, id);
     const stmt = env.DB.prepare("DELETE FROM SubscriptionPlan WHERE id = ?1").bind(id);
     const { meta } = await stmt.run();
     return meta.changes === 1;

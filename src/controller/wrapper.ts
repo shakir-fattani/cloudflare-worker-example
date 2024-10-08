@@ -1,5 +1,8 @@
-const wrapper = (handlerFunc) => {
-  return async (requestObject) => {
+import { RequestObject } from "../types";
+
+const wrapper = (handlerFunc: (requestObject: RequestObject) => Promise<Response | any>) => {
+  
+  return async (requestObject: RequestObject): Promise<Response> => {
     try {
       const response = await handlerFunc(requestObject)
       if (response instanceof Response) {
@@ -11,6 +14,7 @@ const wrapper = (handlerFunc) => {
       })
     } catch (error) {
       console.error(error)
+
       return new Response(JSON.stringify({
         status: 'fail',
         message: `something went wrong.`,

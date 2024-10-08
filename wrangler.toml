@@ -1,15 +1,11 @@
 # wrangler.toml (wrangler v3.78.6^)
 
 name = "billing-app"
-main = "index.js"
+main = "index.ts"
 compatibility_date = "2024-10-06"
 
 [observability]
 enabled = true
-
-[[kv_namespaces]]
-binding = "billingAppKVdb"
-id = "e6946b9f1da74c84bdab6f230fe681b7"
 
 [[d1_databases]]
 binding = "DB"
@@ -19,7 +15,6 @@ database_id = "5c1459c2-fd97-4775-95b9-6b6006521cf2"
 
 [triggers]
 # Schedule cron triggers:
-# - At every 3rd minute
-# - At 3PM on first day of the month
-# - At 11:59PM on the last weekday of the month
-crons = [ "*/3 * * * *", "0 15 1 * *", "59 23 LW * *" ]
+# - At every hour
+# - At 5AM on everyday
+crons = [ "0 * * * *", "0 5 * * *" ]

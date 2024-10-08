@@ -1,8 +1,10 @@
+import { ExecutionContext, ScheduledEvent } from '@cloudflare/workers-types/experimental/index.js';
 import healthRouter from './controller/health.js';
 import subscriptionPlanRouter from './controller/subscription-plan.js';
+import { Env } from './types.js';
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
 
     const url = new URL(request.url);
 
@@ -24,7 +26,8 @@ export default {
 		);
   },
 
-  async scheduled(event, env, ctx) {
-    console.log(event.scheduledTime)
+  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
+    console.log(`Scheduled event triggered at: ${new Date(event.scheduledTime).toISOString()}`);
+    // ctx.waitUntil(retryFailedPayments(env));
   },
 };

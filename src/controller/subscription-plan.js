@@ -1,5 +1,5 @@
 import Router from './router.js'
-import SubscriptionPlanService from './../service/subscription-plan.service.js'
+import SubscriptionPlanService from '../service/subscription-plan.service.js'
 
 const apiRouter = new Router();
 apiRouter.post("/api/subscription-plan/create", async ({ request, env }) => {
@@ -47,6 +47,8 @@ apiRouter.put("/api/subscription-plan/:id/update", async ({ params, request, env
 });
 
 apiRouter.delete("/api/subscription-plan/:id/delete", async ({ params, env }) => {
+	
+	
 	const isDeleted = await SubscriptionPlanService.deletePlanById(env, params.id);
 	if (!isDeleted)
 		throw new Error('plan not found');

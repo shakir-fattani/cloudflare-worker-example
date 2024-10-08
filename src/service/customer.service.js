@@ -75,6 +75,25 @@ export default class CustomerService {
     return CustomerService.getCustomerById(env, id);
   }
   
+  static async updateSubscriptionById(env, id, { subscription_plan_id } = {}) {
+    const subscription = await SubscriptionPlanService.getPlanById(env, subscription_plan_id);
+    if (!subscription) {
+      throw new Error("Subscriptions not found");
+    }
+
+    if (subscription.status != 'active') {
+      throw new Error("Subscriptions status is not active");
+    }
+
+    const stmt = env.DB.prepare(`UPDATE Customer SET subscription_plan_id = ?2, subscription_status = 'inactive' WHERE id = ?1`).bind(id, subscription_plan_id);
+    const { meta } = await stmt.run();
+    if (meta.changes != 1) {
+      return null;
+    }
+    
+    return CustomerService.getCustomerById(env, id);
+  }
+  
   static async deleteCustomerById(env, id) {
     const stmt = env.DB.prepare("DELETE FROM Customer WHERE id = ?1").bind(id);
     const { meta } = await stmt.run();
