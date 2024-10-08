@@ -1,13 +1,21 @@
 const wrapper = (handlerFunc) => {
   return async (requestObject) => {
     try {
-      return await handlerFunc(requestObject)
+      const response = await handlerFunc(requestObject)
+      if (response instanceof Response) {
+        return response;
+      }
+      return new Response(JSON.stringify(response), {
+        status: 200, 
+        headers: { 'Content-Type': 'application/json' }
+      })
     } catch (error) {
       console.error(error)
-      return new Response({
+      return new Response(JSON.stringify({
         status: 'fail',
-        message: `something went wrong. Error: ${JSON.stringify(error)}`
-      }, { status: 404 })
+        message: `something went wrong.`,
+        error,
+      }), { status: 500, headers: { 'Content-Type': 'application/json' } })
     }
   }
 }
