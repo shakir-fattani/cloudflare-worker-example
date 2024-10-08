@@ -19,6 +19,7 @@ export default class Router {
 			(request) => {
 				if (method === undefined || request.method.toLowerCase() === method) {
 					const match = urlPattern.exec({ pathname: new URL(request.url).pathname });
+					
 					if (match) return { params: match.pathname.groups };
 				}
 			},

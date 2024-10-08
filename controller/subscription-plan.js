@@ -34,12 +34,12 @@ apiRouter.put("/api/subscription-plan/:id/update", ({ request, env, ctx }) => "p
 apiRouter.delete("/api/subscription-plan/:id/delete", ({ request, env, ctx }) => "plan Index!");
 
 // 404 for everything else
-apiRouter.all("*", ({ request }) =>  {
-	throw {
-		error: "subscription-plan path Not Found.",
-		status: 404,
-		url: request.url
-	}
-});
+// apiRouter.all("*", ({ request }) =>  {
+// 	throw {
+// 		error: "subscription-plan path Not Found.",
+// 		status: 404,
+// 		url: request.url
+// 	}
+// });
 
 export default apiRouter;
