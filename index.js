@@ -1,12 +1,18 @@
-import apiRouter from './controller.js';
+import healthRouter from './controller/health.js';
+import subscriptionPlanRouter from './controller/subscription-plan.js';
 
 export default {
   async fetch(request, env, ctx) {
 
     const url = new URL(request.url);
-    if (url.pathname === '/health' || url.pathname.startsWith('/api/')) {
+
+    if (url.pathname === '/health') {
+      return healthRouter.handle(request, env, ctx);
+    }
+
+    if (url.pathname.startsWith('/api/subscription-plan')) {
       // You can also use more robust routing
-      return apiRouter.handle(request, env, ctx);
+      return subscriptionPlanRouter.handle(request, env, ctx);
     }
 
     return new Response(

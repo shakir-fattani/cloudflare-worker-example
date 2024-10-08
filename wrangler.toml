@@ -6,3 +6,7 @@ compatibility_date = "2024-10-06"
 
 [observability]
 enabled = true
+
+kv_namespaces = [
+  { binding = "billingAppKVdb", id = "e6946b9f1da74c84bdab6f230fe681b7" }
+]

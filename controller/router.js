@@ -1,3 +1,5 @@
+import wrapper from '../wrapper.js'
+
 export default class Router {
 	routes = [];
 
@@ -25,27 +27,27 @@ export default class Router {
 	}
 
   options(path, handler) {
-		this.register(handler, path, "options");
+		this.register(wrapper(handler), path, "options");
 	}
 	head(path, handler) {
-		this.register(handler, path, "head");
+		this.register(wrapper(handler), path, "head");
 	}
 	get(path, handler) {
-		this.register(handler, path, "get");
+		this.register(wrapper(handler), path, "get");
 	}
 	post(path, handler) {
-		this.register(handler, path, "post");
+		this.register(wrapper(handler), path, "post");
 	}
 	put(path, handler) {
-		this.register(handler, path, "put");
+		this.register(wrapper(handler), path, "put");
 	}
 	patch(path, handler) {
-		this.register(handler, path, "patch");
+		this.register(wrapper(handler), path, "patch");
 	}
 	delete(path, handler) {
-		this.register(handler, path, "delete");
+		this.register(wrapper(handler), path, "delete");
 	}
 	all(path, handler) {
-		this.register(handler, path);
+		this.register(wrapper(handler), path);
 	}
 }
