@@ -1,9 +1,8 @@
 import Router from './router.js'
-import CustomerService from '../service/customer.service.js'
-import { Customer } from '../types.js';
+import CustomerService from '../service/customer.service'
 
-const apiRouter = new Router();
-apiRouter.post("/api/customer/create", async ({ request, env }) => {
+const customerRouter = new Router();
+customerRouter.post("/api/customer/create", async ({ request, env }) => {
 	const content = await request.json();
 
 	const customer  = await CustomerService.createCustomer(env, content)
@@ -15,7 +14,7 @@ apiRouter.post("/api/customer/create", async ({ request, env }) => {
 	}
 });
 
-apiRouter.get("/api/customer/getAll", async ({ env }) => {
+customerRouter.get("/api/customer/getAll", async ({ env }) => {
 	const customers = await CustomerService.getCustomers(env)
 	return {
 		status: 'success',
@@ -23,7 +22,7 @@ apiRouter.get("/api/customer/getAll", async ({ env }) => {
 	};
 });
 
-apiRouter.get("/api/customer/:id/get", async ({ env, params }) => {
+customerRouter.get("/api/customer/:id/get", async ({ env, params }) => {
 	const customer = await CustomerService.getCustomerById(env, params.id);
 	if (!customer)
 		throw new Error('customer not found');
@@ -35,8 +34,8 @@ apiRouter.get("/api/customer/:id/get", async ({ env, params }) => {
 	}
 });
 
-apiRouter.put("/api/customer/:id/update", async ({ params, request, env }) => {
-	const customer = await CustomerService.updateCustomerById(env, params.id, request.json() as unknown as Customer);
+customerRouter.put("/api/customer/:id/update", async ({ params, request, env }) => {
+	const customer = await CustomerService.updateCustomerById(env, params.id, await request.json());
 	if (!customer)
 		throw new Error('customer not found');
 
@@ -47,7 +46,7 @@ apiRouter.put("/api/customer/:id/update", async ({ params, request, env }) => {
 	}
 });
 
-apiRouter.post("/api/customer/:id/apply-subscription-plan", async ({ params, request, env }) => {
+customerRouter.post("/api/customer/:id/apply-subscription-plan", async ({ params, request, env }) => {
 	const { subscription_plan_id } = request.json() as unknown as { subscription_plan_id: string }
 	const customer = await CustomerService.updateSubscriptionById(env, params.id, subscription_plan_id);
 	if (!customer)
@@ -60,7 +59,7 @@ apiRouter.post("/api/customer/:id/apply-subscription-plan", async ({ params, req
 	}
 });
 
-apiRouter.delete("/api/customer/:id/delete", async ({ params, env }) => {
+customerRouter.delete("/api/customer/:id/delete", async ({ params, env }) => {
 	const isDeleted = await CustomerService.deleteCustomerById(env, params.id);
 	if (!isDeleted)
 		throw new Error('customer not found');
@@ -72,7 +71,7 @@ apiRouter.delete("/api/customer/:id/delete", async ({ params, env }) => {
 });
 
 // 404 for everything else
-apiRouter.all("*", ({ request }) =>  {
+customerRouter.all("*", ({ request }) =>  {
 	throw {
 		error: "customer path Not Found.",
 		status: 404,
@@ -80,4 +79,4 @@ apiRouter.all("*", ({ request }) =>  {
 	}
 });
 
-export default apiRouter;
+export default customerRouter;

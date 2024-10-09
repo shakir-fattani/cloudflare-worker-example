@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2021",
+    "types": ["@cloudflare/workers-types"],
+    "lib": ["es2021", "webworker"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "typeRoots": [ "src/**/*.d.ts" ],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    // "skipLibCheck": true
+  },
+  "include": [ "src/**/*.ts", "src/**/*.d.ts" ],
+  "exclude": [ "node_modules" ]
+}

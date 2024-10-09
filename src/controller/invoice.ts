@@ -1,11 +1,9 @@
 import Router from './router.js'
-import InvoiceService from '../service/invoice.service.js'
+import InvoiceService from '../service/invoice.service'
 
 const apiRouter = new Router();
 apiRouter.post("/api/invoice/create", async ({ request, env }) => {
-	const content = await request.json();
-
-	const invoice  = await InvoiceService.createInvoice(env, content)
+	const invoice  = await InvoiceService.createInvoice(env, await request.json())
 
 	return {
 		status: 'success',
@@ -23,10 +21,10 @@ apiRouter.get("/api/invoice/getAll", async ({ env }) => {
 });
 
 apiRouter.get("/api/invoice/get/:customerId", async ({ env, params }) => {
-	const invoice = await InvoiceService.getInvoiceByCustomerId(env, params.customerId)
+	const invoices = await InvoiceService.getInvoicesByCustomerId(env, params.customerId)
 	return {
 		status: 'success',
-		invoice
+		invoices
 	};
 });
 
@@ -43,7 +41,7 @@ apiRouter.get("/api/invoice/:id/get", async ({ env, params }) => {
 });
 
 apiRouter.put("/api/invoice/:id/update", async ({ params, request, env }) => {
-	const invoice = await InvoiceService.updateInvoiceById(env, params.id, request.json());
+	const invoice = await InvoiceService.updateInvoiceById(env, params.id, await request.json());
 	if (!invoice)
 		throw new Error('invoice not found');
 

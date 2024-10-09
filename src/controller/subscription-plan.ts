@@ -1,8 +1,8 @@
 import Router from './router.js'
 import SubscriptionPlanService from '../service/subscription-plan.service.js'
 
-const apiRouter = new Router();
-apiRouter.post("/api/subscription-plan/create", async ({ request, env }) => {
+const subscriptionPlanRouter = new Router();
+subscriptionPlanRouter.post("/api/subscription-plan/create", async ({ request, env }) => {
 	const content = await request.json();
 
 	const plan = await SubscriptionPlanService.createPlan(env, content)
@@ -14,7 +14,7 @@ apiRouter.post("/api/subscription-plan/create", async ({ request, env }) => {
 	}
 });
 
-apiRouter.get("/api/subscription-plan/getAll", async ({ env }) => {
+subscriptionPlanRouter.get("/api/subscription-plan/getAll", async ({ env }) => {
 	const plans = await SubscriptionPlanService.getPlans(env)
 	return {
 		status: 'success',
@@ -22,7 +22,7 @@ apiRouter.get("/api/subscription-plan/getAll", async ({ env }) => {
 	}
 });
 
-apiRouter.get("/api/subscription-plan/:id/get", async ({ env, params }) => {
+subscriptionPlanRouter.get("/api/subscription-plan/:id/get", async ({ env, params }) => {
 	const plan = await SubscriptionPlanService.getPlanById(env, params.id);
 	if (!plan)
 		throw new Error('plan not found');
@@ -34,8 +34,8 @@ apiRouter.get("/api/subscription-plan/:id/get", async ({ env, params }) => {
 	}
 });
 
-apiRouter.put("/api/subscription-plan/:id/update", async ({ params, request, env }) => {
-	const plan = await SubscriptionPlanService.updatePlanById(env, params.id, request.json());
+subscriptionPlanRouter.put("/api/subscription-plan/:id/update", async ({ params, request, env }) => {
+	const plan = await SubscriptionPlanService.updatePlanById(env, params.id, await request.json());
 	if (!plan)
 		throw new Error('plan not found');
 
@@ -46,8 +46,7 @@ apiRouter.put("/api/subscription-plan/:id/update", async ({ params, request, env
 	}
 });
 
-apiRouter.delete("/api/subscription-plan/:id/delete", async ({ params, env }) => {
-	
+subscriptionPlanRouter.delete("/api/subscription-plan/:id/delete", async ({ params, env }) => {
 	
 	const isDeleted = await SubscriptionPlanService.deletePlanById(env, params.id);
 	if (!isDeleted)
@@ -55,12 +54,12 @@ apiRouter.delete("/api/subscription-plan/:id/delete", async ({ params, env }) =>
 
 	return {
 		status: 'success',
-		message: `plan #: ${plan.id} deleted`
+		message: `plan #: ${params.id} deleted`
 	}
 });
 
 // 404 for everything else
-apiRouter.all("*", ({ request }) =>  {
+subscriptionPlanRouter.all("*", ({ request }) =>  {
 	throw {
 		error: "subscription-plan path Not Found.",
 		status: 404,
@@ -68,4 +67,4 @@ apiRouter.all("*", ({ request }) =>  {
 	}
 });
 
-export default apiRouter;
+export default subscriptionPlanRouter;

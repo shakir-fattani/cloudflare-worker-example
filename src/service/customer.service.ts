@@ -1,15 +1,15 @@
 import { v4 } from 'uuid'
 import SubscriptionPlanService from './subscription-plan.service'
+import { Customer, Env } from '../types';
 
 export default class CustomerService {
 
-  static throwIfWrongSubscriptionStatus(status) {
-    if (!['active', 'inactive', 'cancelled'].includes(status)) {
+  static throwIfWrongSubscriptionStatus(status: string) {
+    if (!['active', 'inactive', 'cancelled'].includes(status))
       throw new Error('not a valid subscription status')
-    }
   }
 
-  static async createCustomer(env, { name, email, subscription_plan_id, subscription_status }) {
+  static async createCustomer(env: Env, { name, email, subscription_plan_id, subscription_status }: Omit<Customer, 'id'>): Promise<Customer> {
     CustomerService.throwIfWrongSubscriptionStatus(subscription_status)
 
     const subscription = await SubscriptionPlanService.getPlanById(env, subscription_plan_id);
@@ -39,43 +39,43 @@ export default class CustomerService {
     return customer;
   }
 
-  static async getCustomers(env) {
+  static async getCustomers(env: Env): Promise<Array<Customer>> {
     const stmt = env.DB.prepare("SELECT id, name, email, subscription_plan_id, subscription_status FROM Customer");
     const { results } = await stmt.all();
-    return results;
+    return results as unknown as Array<Customer>;
   }
 
-  static async getCustomerById(env, id) {
+  static async getCustomerById(env: Env, id: string): Promise<Customer | null | undefined> {
     const stmt = env.DB.prepare("SELECT id, name, email, subscription_plan_id, subscription_status FROM Customer WHERE id = ?1").bind(id);
     const { results } = await stmt.all();
-    return results[0];
+    return results[0] as unknown as Customer;
   }
 
-  static async updateCustomerById(env, id, { name, email } = {}) {
+  static async updateCustomerById(env: Env, id: string, { name, email }: Pick<Customer, 'name' | 'email'>): Promise<Customer | null | undefined> {
     const bindingArray = [];
     const fieldsNeedToBeUpdated = [];
     let bindingCount = 2
-    
+
     if (name) {
       bindingArray.push(name);
       fieldsNeedToBeUpdated.push(`name = ?${bindingCount++}`)
     }
-    
+
     if (email) {
       bindingArray.push(email);
       fieldsNeedToBeUpdated.push(`email = ?${bindingCount++}`)
     }
-    
+
     const stmt = env.DB.prepare(`UPDATE Customer SET ${fieldsNeedToBeUpdated.join(', ')} WHERE id = ?1`).bind(id, ...bindingArray);
     const { meta } = await stmt.run();
     if (meta.changes != 1) {
       return null;
     }
-    
-    return CustomerService.getCustomerById(env, id);
+
+    return await CustomerService.getCustomerById(env, id);
   }
-  
-  static async updateSubscriptionById(env, id, { subscription_plan_id } = {}) {
+
+  static async updateSubscriptionById(env: Env, id: string, subscription_plan_id: string): Promise<Customer | null | undefined> {
     const subscription = await SubscriptionPlanService.getPlanById(env, subscription_plan_id);
     if (!subscription) {
       throw new Error("Subscriptions not found");
@@ -90,11 +90,11 @@ export default class CustomerService {
     if (meta.changes != 1) {
       return null;
     }
-    
-    return CustomerService.getCustomerById(env, id);
+
+    return await CustomerService.getCustomerById(env, id);
   }
-  
-  static async deleteCustomerById(env, id) {
+
+  static async deleteCustomerById(env: Env, id: string): Promise<boolean> {
     const stmt = env.DB.prepare("DELETE FROM Customer WHERE id = ?1").bind(id);
     const { meta } = await stmt.run();
     return meta.changes === 1;

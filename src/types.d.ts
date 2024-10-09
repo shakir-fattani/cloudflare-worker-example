@@ -43,3 +43,40 @@ interface Payment {
   payment_method: 'credit card' | 'paypal';
   payment_date: string;
 }
+
+
+declare class URLPattern {
+  constructor(init?: URLPatternInit | string, baseURL?: string);
+  test(input: URLPatternInput, baseURL?: string): boolean;
+  exec(input: URLPatternInput, baseURL?: string): URLPatternResult | null;
+}
+
+interface URLPatternInit {
+  protocol?: string;
+  username?: string;
+  password?: string;
+  hostname?: string;
+  port?: string;
+  pathname?: string;
+  search?: string;
+  hash?: string;
+}
+
+type URLPatternInput = string | { protocol?: string; username?: string; password?: string; hostname?: string; port?: string; pathname?: string; search?: string; hash?: string };
+
+interface URLPatternResult {
+  inputs: [URLPatternInput, ...URLPatternInput[]];
+  protocol: URLPatternComponentResult;
+  username: URLPatternComponentResult;
+  password: URLPatternComponentResult;
+  hostname: URLPatternComponentResult;
+  port: URLPatternComponentResult;
+  pathname: URLPatternComponentResult;
+  search: URLPatternComponentResult;
+  hash: URLPatternComponentResult;
+}
+
+interface URLPatternComponentResult {
+  input: string;
+  groups: { [key: string]: string | undefined };
+}
